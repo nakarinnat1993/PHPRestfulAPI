@@ -21,5 +21,10 @@ return [
             'user'=> 'root',
             'pass'=> '',
         ],
+
+         // jwt settings
+         "jwt" => [
+            'secret' => 'supersecretkeyyoushouldnotcommittogithub'
+        ]
     ],
 ];
