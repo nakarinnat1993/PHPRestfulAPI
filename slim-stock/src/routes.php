@@ -3,6 +3,7 @@
 use Slim\App;
 use Slim\Http\Request;
 use Slim\Http\Response;
+use \Firebase\JWT\JWT;
 
 return function (App $app) {
     $container = $app->getContainer();
@@ -21,6 +22,29 @@ return function (App $app) {
     });
     $app->delete('/data', function (Request $request, Response $response, array $args) use ($container) {
         echo "Delete page";
+    });
+
+    $app->post('/login', function (Request $request, Response $response, array $args) use ($container) {
+
+        $input = $request->getParsedBody();
+
+        $password = sha1($input['password']);
+
+        $sql = "SELECT * FROM users WHERE username=:username and password=:password";
+        $sth = $this->db->prepare($sql);
+        $sth->bindParam("username", $input['username']);
+        $sth->bindParam("password", $password);
+        $sth->execute();
+
+        $count = $sth->rowCount();
+        if ($count) {
+            $user = $sth->fetchObject();
+            $settings = $this->get('settings'); // get settings array.
+            $token = JWT::encode(['id' => $user->id, 'username' => $user->username], $settings['jwt']['secret'], "HS256");
+            return $this->response->withJson(['token' => $token]);
+        } else {
+            return $this->response->withJson(['error' => true, 'message' => 'These credentials do not match our records.']);
+        }
     });
 
     $app->group('/api', function () use ($app) {
