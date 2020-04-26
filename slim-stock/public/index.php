@@ -17,6 +17,13 @@ session_start();
 $settings = require __DIR__ . '/../src/settings.php';
 $app = new \Slim\App($settings);
 
+// Basic auth
+// $app->add(new Tuupola\Middleware\HttpBasicAuthentication([
+//     "users" => [
+//         "admin" => "1234"
+//     ]
+// ]));
+
 // Set up dependencies
 $dependencies = require __DIR__ . '/../src/dependencies.php';
 $dependencies($app);
